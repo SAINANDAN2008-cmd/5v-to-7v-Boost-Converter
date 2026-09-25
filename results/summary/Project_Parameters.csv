@@ -1,0 +1,12 @@
+Parameter,Value
+Input voltage,5 V
+Target output voltage,7 V
+Baseline switching frequency,100 kHz
+Baseline duty cycle,35 %
+Baseline inductance,100 uH
+Baseline capacitance,220 uF
+Simulation baseline load,24 ohm
+Actual hardware load,27 ohm
+Diode forward-drop approximation,0.7 V
+Baseline simulation time,50 ms
+Baseline time step,100 ns
