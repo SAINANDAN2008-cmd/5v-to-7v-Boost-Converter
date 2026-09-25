@@ -1,294 +1,42 @@
-<div align="center">
-
 # ⚡ 5 V → 7 V High-Frequency Boost Converter
+
+<div align="center">
 
 ### Mathematical Design • Python Analysis • KiCad • SPICE • PWM Generation • Parametric Analysis • Hardware Development
 
-<br>
-
 ![Power Electronics](https://img.shields.io/badge/Domain-Power%20Electronics-blue?style=for-the-badge)
 ![Input](https://img.shields.io/badge/Input-5V-success?style=for-the-badge)
-![Output](https://img.shields.io/badge/Output-7V-orange?style=for-the-badge)
+![Target](https://img.shields.io/badge/Target%20Output-7V-orange?style=for-the-badge)
 ![Switching](https://img.shields.io/badge/Switching-100kHz-red?style=for-the-badge)
-
-<br>
-
-![KiCad](https://img.shields.io/badge/KiCad-10.0-blue?style=flat-square)
-![Python](https://img.shields.io/badge/Python-3.x-yellow?style=flat-square)
-![SPICE](https://img.shields.io/badge/SPICE-Simulation-purple?style=flat-square)
-![Arduino](https://img.shields.io/badge/Arduino-UNO-00979D?style=flat-square)
-![Wokwi](https://img.shields.io/badge/Wokwi-PWM%20Verification-green?style=flat-square)
-![GitHub](https://img.shields.io/badge/GitHub-Version%20Control-black?style=flat-square)
 
 </div>
 
 ---
 
-# 📌 Project Overview
+## 📌 Project Overview
 
-This project presents the design, mathematical analysis, simulation, parametric analysis, PWM generation, and hardware development of a **5 V to 7 V high-frequency DC-DC boost converter**.
+This project presents the mathematical design, Python-based analysis, KiCad schematic development, SPICE simulation, PWM generation, parametric analysis, and hardware development of a 5 V to 7 V high-frequency DC-DC boost converter.
 
-The converter uses approximately **100 kHz switching** and PWM control to drive an N-channel MOSFET.
-
-The project follows a complete engineering workflow:
+The current design target is:
 
 ```text
-Theory
-   ↓
-Design Calculations
-   ↓
-Python Mathematical Model
-   ↓
-KiCad Schematic
-   ↓
-SPICE Simulation
-   ↓
-Parametric Analysis
-   ↓
-PWM Generation
-   ↓
-Wokwi Verification
-   ↓
-PCB Design
-   ↓
-Hardware Prototype
-   ↓
-Experimental Validation
-```
-
-The primary research question is:
-
-> How do duty cycle, switching frequency, inductance, capacitance, and load resistance influence the output voltage, current ripple, output ripple, transient response, and power behavior of a high-frequency boost converter?
-
----
-
-# 🎯 Project Objectives
-
-The project aims to:
-
-- Design a 5 V to approximately 7 V boost converter.
-- Operate the converter at approximately 100 kHz.
-- Calculate the ideal duty cycle.
-- Calculate a practical duty cycle considering diode forward voltage.
-- Calculate switching period, ON time, and OFF time.
-- Determine suitable inductor and capacitor values.
-- Calculate output current and power.
-- Calculate input-current requirements.
-- Analyze inductor-current ripple.
-- Estimate output-voltage ripple.
-- Determine the approximate critical inductance.
-- Develop the converter schematic in KiCad.
-- Perform SPICE transient simulation.
-- Generate 100 kHz PWM using Arduino UNO.
-- Verify PWM behavior using Wokwi.
-- Generate analytical datasets using Python.
-- Perform parametric sweeps.
-- Compare theoretical and simulation results.
-- Develop a PCB in a later stage.
-- Build and experimentally validate the converter.
-
----
-
-# ⚙️ System Specifications
-
-## Baseline Design
-
-| Parameter | Value |
-|---|---:|
-| Input voltage | 5 V DC |
-| Target output voltage | 7 V DC |
-| Switching frequency | 100 kHz |
-| Switching period | 10 µs |
-| Practical duty cycle | ≈35.06% |
-| Simulation duty cycle | 36% |
-| Inductor | 100 µH |
-| Simulation capacitor | 1000 µF |
-| Simulation load | 24 Ω |
-| PWM amplitude | 0–5 V |
-| Switching device | NMOS |
-| Diode model | SPICE diode |
-
----
-
-# 🔧 Hardware Configuration
-
-The planned hardware prototype uses:
-
-| Component | Specification |
-|---|---|
-| Input supply | 5 V / 2 A DC |
-| MOSFET | IRLZ44N |
-| Inductor | 100 µH |
-| Diode | 1N5822 |
-| Output capacitor | 220 µF / 35 V |
-| Load resistor | 27 Ω / 10 W |
-| Gate resistor | 10 Ω |
-| Gate pulldown | 10 kΩ |
-| Controller | Arduino UNO |
-| Switching frequency | 100 kHz |
-| Initial duty cycle | ≈35–36% |
-
-### Important distinction
-
-The **current KiCad simulation configuration** and the **planned hardware configuration** are intentionally documented separately.
-
-### Simulation
-
-```text
-L = 100 µH
-C = 1000 µF
-R = 24 Ω
-D = 36%
-f = 100 kHz
-```
-
-### Hardware
-
-```text
-L = 100 µH
-C = 220 µF / 35 V
-R = 27 Ω / 10 W
-D ≈ 35–36%
-f = 100 kHz
-```
-
-This prevents simulation parameters from being incorrectly presented as hardware measurements.
-
----
-
-# 🔌 Boost Converter Circuit
-
-The fundamental boost topology is:
-
-```text
-                         L1
-                      100 µH
-5 V DC ───────────────coil──────────●─────────|>|────────── +VOUT
-                                    │           D1
-                                    │         1N5822
-                                    │
-                                    D
-                              ┌─────┴─────┐
-                              │ IRLZ44N   │
-                              │           │
-Arduino PWM ── 10 Ω ──────────G           │
-                              │           │
-                         10 kΩ│           S
-                              │           │
-                              └───────────┴──────── GND
-                                          │
-                                         GND
-
-
-                              +VOUT
-                                │
-                    ┌───────────┴───────────┐
-                    │                       │
-                220 µF                  27 Ω / 10 W
-                 35 V                     LOAD
-                    │                       │
-                    └───────────┬───────────┘
-                                │
-                               GND
-```
-
----
-
-# 🔐 MOSFET Gate Driver Network
-
-The Arduino does not connect directly to the MOSFET gate in the documented hardware configuration.
-
-The gate network is:
-
-```text
-Arduino UNO PWM
-       │
-      10 Ω
-       │
-       ▼
-IRLZ44N Gate
-       │
-      10 kΩ
-       │
-      GND
-```
-
-### 10 Ω Gate Resistor
-
-The 10 Ω resistor is used to:
-
-- Limit instantaneous gate-current transients.
-- Reduce high-frequency ringing.
-- Reduce electromagnetic interference caused by very fast gate transitions.
-
-### 10 kΩ Gate Pulldown
-
-The 10 kΩ resistor ensures that:
-
-```text
-Arduino OFF / RESET
-        ↓
-Gate pulled LOW
-        ↓
-MOSFET OFF
-```
-
-This prevents the MOSFET from unintentionally turning ON when the Arduino is not actively driving the gate.
-
----
-
-# 🔄 Operating Principle
-
-A boost converter transfers energy through two main switching states.
-
-## MOSFET ON
-
-When the MOSFET is ON:
-
-```text
-5 V → Inductor → MOSFET → GND
-```
-
-The inductor stores energy.
-
-Approximately:
-
-$$
-V_L \approx V_{in}
-$$
-
-Therefore:
-
-$$
-\frac{dI_L}{dt}=\frac{V_{in}}{L}
-$$
-
-The inductor current increases during the ON interval.
-
----
-
-## MOSFET OFF
-
-When the MOSFET is OFF:
-
-```text
-Inductor → Diode → Output Capacitor + Load
-```
-
-The stored energy in the inductor is transferred to the output.
-
-The output voltage becomes greater than the input voltage.
-
----
-
-# 📐 COMPLETE DESIGN CALCULATIONS
+Input Voltage       : 5 V DC
+Target Output       : 7 V DC
+Switching Frequency : 100 kHz
+Ideal Duty Cycle    : 28.57%
+Practical Estimate  : ≈35.06%
+Simulation Duty     : 36%
+Inductor            : 100 µH
+Simulation Load     : 24 Ω
+Hardware Load       : 27 Ω / 10 W
+# 📐 Complete Design Calculations
 
 ## 1. Ideal Boost Converter Equation
 
 For an ideal boost converter operating in continuous conduction mode:
 
 $$
-V_o=\frac{V_{in}}{1-D}
+V_o = \frac{V_{in}}{1-D}
 $$
 
 where:
@@ -300,209 +48,182 @@ where:
 Rearranging:
 
 $$
-D=1-\frac{V_{in}}{V_o}
+D = 1 - \frac{V_{in}}{V_o}
 $$
 
 ---
 
-# 2. Ideal Duty Cycle for 5 V → 7 V
+## 2. Ideal Duty Cycle for 5 V → 7 V
 
 Given:
 
 $$
-V_{in}=5\text{ V}
+V_{in} = 5\text{ V}
 $$
 
 $$
-V_o=7\text{ V}
-$$
-
-Using:
-
-$$
-D=1-\frac{V_{in}}{V_o}
-$$
-
-Substituting:
-
-$$
-D=1-\frac{5}{7}
-$$
-
-$$
-D=1-0.7142857
-$$
-
-$$
-D=0.285714
+V_o = 7\text{ V}
 $$
 
 Therefore:
 
 $$
-\boxed{D_{ideal}=28.57\%}
+D = 1 - \frac{5}{7}
+$$
+
+$$
+D = 1 - 0.7142857
+$$
+
+$$
+D = 0.285714
+$$
+
+Therefore:
+
+$$
+D_{ideal} = 28.57\%
 $$
 
 ---
 
-# 3. Practical Duty Cycle
+## 3. Practical Duty Cycle
 
-Real boost converters have losses caused by:
+A real boost converter has losses caused by the diode, MOSFET, inductor resistance, capacitor ESR, switching losses, and other parasitic effects.
 
-- Diode forward voltage
-- MOSFET conduction resistance
-- Inductor winding resistance
-- Switching losses
-- Capacitor ESR
-- PCB parasitics
-
-For a simplified calculation, assume:
+For a simplified calculation, assume a diode forward voltage of:
 
 $$
-V_D\approx0.7\text{ V}
+V_D = 0.7\text{ V}
 $$
 
-The approximate practical relation is:
+The approximate practical boost-converter relationship is:
 
 $$
-V_o\approx\frac{V_{in}}{1-D}-V_D
+V_o \approx \frac{V_{in}}{1-D} - V_D
 $$
 
 Rearranging:
 
 $$
-V_o+V_D=\frac{V_{in}}{1-D}
-$$
-
-Therefore:
-
-$$
-1-D=\frac{V_{in}}{V_o+V_D}
-$$
-
-Hence:
-
-$$
-D=1-\frac{V_{in}}{V_o+V_D}
+D \approx 1 - \frac{V_{in}}{V_o + V_D}
 $$
 
 Substituting:
 
 $$
-D=1-\frac{5}{7+0.7}
+D \approx 1 - \frac{5}{7 + 0.7}
 $$
 
 $$
-D=1-\frac{5}{7.7}
+D \approx 1 - \frac{5}{7.7}
 $$
 
 $$
-D\approx0.35065
+D \approx 0.35065
 $$
 
 Therefore:
 
 $$
-\boxed{D_{practical}\approx35.06\%}
+D_{practical} \approx 35.06\%
 $$
 
-The KiCad simulation uses:
+The KiCad/SPICE simulation uses:
 
 $$
-\boxed{D_{simulation}=36\%}
+D_{simulation} = 36\%
 $$
 
-The small difference provides a practical margin in the simplified model.
+The 36% value is close to the simplified practical estimate and is used as the simulation operating point.
 
 ---
 
-# 4. Switching Frequency
+## 4. Switching Frequency
 
 The selected switching frequency is:
 
 $$
-f_s=100\text{ kHz}
+f_s = 100\text{ kHz}
 $$
 
-or:
+Therefore:
 
 $$
-f_s=100000\text{ Hz}
+f_s = 100000\text{ Hz}
 $$
 
 The switching period is:
 
 $$
-T=\frac{1}{f_s}
+T = \frac{1}{f_s}
+$$
+
+$$
+T = \frac{1}{100000}
+$$
+
+$$
+T = 10 \times 10^{-6}\text{ s}
 $$
 
 Therefore:
 
 $$
-T=\frac{1}{100000}
-$$
-
-$$
-T=10\times10^{-6}\text{ s}
-$$
-
-Hence:
-
-$$
-\boxed{T=10\ \mu s}
+T = 10\ \mu\text{s}
 $$
 
 ---
 
-# 5. ON Time
+## 5. PWM ON Time
 
 For a 36% duty cycle:
 
 $$
-T_{ON}=DT
+T_{ON} = DT
 $$
 
 $$
-T_{ON}=0.36(10\ \mu s)
+T_{ON} = 0.36 \times 10\ \mu\text{s}
 $$
 
 Therefore:
 
 $$
-\boxed{T_{ON}=3.6\ \mu s}
+T_{ON} = 3.6\ \mu\text{s}
 $$
 
 ---
 
-# 6. OFF Time
+## 6. PWM OFF Time
 
 The OFF time is:
 
 $$
-T_{OFF}=T-T_{ON}
+T_{OFF} = T - T_{ON}
 $$
 
 $$
-T_{OFF}=10-3.6
+T_{OFF} = 10 - 3.6
 $$
 
 Therefore:
 
 $$
-\boxed{T_{OFF}=6.4\ \mu s}
+T_{OFF} = 6.4\ \mu\text{s}
 $$
 
 Alternatively:
 
 $$
-T_{OFF}=(1-D)T
+T_{OFF} = (1-D)T
 $$
 
 ---
 
-# 7. PWM Parameters
+## 7. PWM Parameters Used in SPICE
 
-The SPICE PWM source uses approximately:
+The SPICE pulse source is configured approximately as:
 
 ```text
 V1  = 0 V
@@ -514,135 +235,130 @@ tw  = 3.6 µs
 per = 10 µs
 ```
 
-Conceptually:
+The duty cycle is:
 
-```text
-5 V       ┌──────────┐                 ┌──────────┐
-          │          │                 │          │
-0 V ──────┘          └─────────────────┘          └────
+$$
+D = \frac{T_{ON}}{T}
+$$
 
-          ← 3.6 µs →
-          ←────────────── 10 µs ────────────────→
-```
+$$
+D = \frac{3.6}{10}
+$$
+
+$$
+D = 0.36
+$$
 
 Therefore:
 
 $$
-D=\frac{T_{ON}}{T}
-$$
-
-$$
-D=\frac{3.6}{10}
-$$
-
-$$
-\boxed{D=36\%}
+D = 36\%
 $$
 
 ---
 
-# 8. Output Current
+## 8. Output Current
 
 For the simulation load:
 
 $$
-R_{load}=24\Omega
+R_{load} = 24\ \Omega
 $$
 
-At the target output:
+At the target output voltage:
 
 $$
-V_o=7\text{ V}
+V_o = 7\text{ V}
 $$
 
 Using Ohm's law:
 
 $$
-I_o=\frac{V_o}{R_{load}}
+I_o = \frac{V_o}{R_{load}}
 $$
 
 $$
-I_o=\frac{7}{24}
+I_o = \frac{7}{24}
 $$
 
 Therefore:
 
 $$
-\boxed{I_o\approx0.292\text{ A}}
+I_o \approx 0.292\text{ A}
 $$
 
 ---
 
-# 9. Output Power
+## 9. Output Power
 
 Output power is:
 
 $$
-P_o=V_oI_o
+P_o = V_o I_o
 $$
 
 Substituting:
 
 $$
-P_o=7(0.292)
+P_o = 7 \times 0.292
 $$
 
 Therefore:
 
 $$
-\boxed{P_o\approx2.04\text{ W}}
+P_o \approx 2.04\text{ W}
 $$
 
 Alternatively:
 
 $$
-P_o=\frac{V_o^2}{R_{load}}
+P_o = \frac{V_o^2}{R_{load}}
 $$
 
 $$
-P_o=\frac{7^2}{24}
+P_o = \frac{7^2}{24}
 $$
 
 $$
-\boxed{P_o\approx2.04\text{ W}}
+P_o \approx 2.04\text{ W}
 $$
 
 ---
 
-# 10. Ideal Input Current
+## 10. Approximate Input Current
 
 Ignoring converter losses:
 
 $$
-P_{in}\approx P_o
+P_{in} \approx P_o
 $$
 
 Therefore:
 
 $$
-I_{in}\approx\frac{P_o}{V_{in}}
+I_{in} \approx \frac{P_o}{V_{in}}
 $$
 
 $$
-I_{in}\approx\frac{2.04}{5}
+I_{in} \approx \frac{2.04}{5}
 $$
 
 Therefore:
 
 $$
-\boxed{I_{in}\approx0.408\text{ A}}
+I_{in} \approx 0.408\text{ A}
 $$
 
-The actual hardware input current will be higher because of losses.
+The actual hardware input current will be higher when converter losses are included.
 
 ---
 
-# 11. Inductor Current Ripple
+## 11. Inductor Current Ripple
 
-For a boost converter, the approximate inductor current ripple is:
+The approximate inductor-current ripple is:
 
 $$
-\Delta I_L=
+\Delta I_L =
 \frac{V_{in}D}{Lf_s}
 $$
 
@@ -657,55 +373,69 @@ D=0.36
 $$
 
 $$
-L=100\ \mu H
+L=100\ \mu\text{H}
 $$
 
 $$
 f_s=100\text{ kHz}
 $$
 
-Substituting:
+Therefore:
 
 $$
-\Delta I_L=
-\frac{5(0.36)}
+\Delta I_L =
+\frac{5\times0.36}
 {(100\times10^{-6})(100000)}
+$$
+
+$$
+\Delta I_L = 0.18\text{ A}
 $$
 
 Therefore:
 
 $$
-\boxed{\Delta I_L\approx0.18\text{ A}}
+\Delta I_L \approx 0.18\text{ A}
 $$
 
 ---
 
-# 12. Inductor Peak Current
+## 12. Average Inductor Current
 
-The approximate average inductor current is close to the input current:
-
-$$
-I_{L,avg}\approx I_{in}
-$$
-
-Therefore:
+For an idealized boost converter:
 
 $$
-I_{L,avg}\approx0.408\text{ A}
+I_{L,avg} \approx I_{in}
 $$
 
-Peak current:
+Using the calculated input current:
 
 $$
-I_{L,peak}
-=
-I_{L,avg}+\frac{\Delta I_L}{2}
+I_{L,avg} \approx 0.408\text{ A}
 $$
+
+---
+
+## 13. Peak Inductor Current
+
+The approximate peak inductor current is:
 
 $$
 I_{L,peak}
 =
-0.408+\frac{0.18}{2}
+I_{L,avg}
++
+\frac{\Delta I_L}{2}
+$$
+
+Substituting:
+
+$$
+I_{L,peak}
+=
+0.408
++
+\frac{0.18}{2}
 $$
 
 $$
@@ -717,54 +447,72 @@ $$
 Therefore:
 
 $$
-\boxed{I_{L,peak}\approx0.498\text{ A}}
+I_{L,peak} \approx 0.498\text{ A}
 $$
 
 ---
 
-# 13. Minimum Inductor Current
+## 14. Minimum Inductor Current
+
+The minimum inductor current is:
 
 $$
 I_{L,min}
 =
-I_{L,avg}-\frac{\Delta I_L}{2}
+I_{L,avg}
+-
+\frac{\Delta I_L}{2}
+$$
+
+Substituting:
+
+$$
+I_{L,min}
+=
+0.408
+-
+\frac{0.18}{2}
 $$
 
 $$
 I_{L,min}
 =
-0.408-\frac{0.18}{2}
+0.318\text{ A}
 $$
 
 Therefore:
 
 $$
-\boxed{I_{L,min}\approx0.318\text{ A}}
+I_{L,min} \approx 0.318\text{ A}
 $$
 
-Since the calculated minimum current is positive, the simplified model indicates continuous-conduction operation for this operating point.
+Since:
+
+$$
+I_{L,min} > 0
+$$
+
+the simplified calculation indicates continuous-conduction operation for this operating point.
 
 ---
 
-# 14. Inductor Sizing
+## 15. Inductor Sizing
 
-The inductor design equation is:
+The basic inductor-sizing equation is:
 
 $$
-L=
+L =
 \frac{V_{in}D}
 {f_s\Delta I_L}
 $$
 
-A common design approach is to select an allowable inductor-current ripple as a percentage of the average input current.
-
-For example, assuming:
+Assume an allowable inductor-current ripple of approximately 30% of the average input current:
 
 $$
-\Delta I_L\approx30\%I_{in}
+\Delta I_L \approx 0.3I_{in}
 $$
 
-and:
+Using:
 
 $$
 I_{in}\approx0.408\text{ A}
@@ -773,46 +521,50 @@ $$
 we obtain:
 
 $$
-\Delta I_L\approx0.3(0.408)
+\Delta I_L \approx 0.3\times0.408
 $$
 
 $$
-\Delta I_L\approx0.122\text{ A}
+\Delta I_L \approx 0.122\text{ A}
 $$
 
-Then:
+Using the practical duty cycle:
 
 $$
-L=
-\frac{5(0.3506)}
-{(100000)(0.122)}
+D\approx0.3506
 $$
 
-Therefore:
+the required inductance is approximately:
 
 $$
-L\approx144\ \mu H
+L =
+\frac{5\times0.3506}
+{100000\times0.122}
 $$
 
-A practical standard value is approximately:
+$$
+L \approx 144\ \mu\text{H}
+$$
+
+A practical standard value would therefore be approximately:
 
 $$
-\boxed{L\approx150\ \mu H}
+L \approx 150\ \mu\text{H}
 $$
 
 However, the current KiCad simulation uses:
 
 $$
-\boxed{L=100\ \mu H}
+L = 100\ \mu\text{H}
 $$
 
-The 100 µH value is therefore treated as the simulation/design study value, while 150 µH is a possible value from a 30% ripple-based sizing approach.
+The 100 µH value is therefore documented as the actual simulation value, while approximately 150 µH is the value obtained from this particular 30% ripple design criterion.
 
 ---
 
-# 15. Output Capacitor Calculation
+## 16. Output Capacitor Ripple
 
-The approximate output-voltage ripple is:
+The simplified output-voltage ripple equation is:
 
 $$
 \Delta V_o
@@ -820,10 +572,10 @@ $$
 \frac{I_oD}{f_sC}
 $$
 
-For the current simulation:
+For the simulation:
 
 $$
-I_o=0.292\text{ A}
+I_o \approx 0.292\text{ A}
 $$
 
 $$
@@ -835,7 +587,7 @@ f_s=100\text{ kHz}
 $$
 
 $$
-C=1000\ \mu F
+C=1000\ \mu\text{F}
 $$
 
 Therefore:
@@ -843,72 +595,64 @@ Therefore:
 $$
 \Delta V_o
 \approx
-\frac{0.292(0.36)}
-{(100000)(1000\times10^{-6})}
+\frac{0.292\times0.36}
+{100000\times1000\times10^{-6}}
 $$
 
-Therefore:
-
 $$
-\boxed{\Delta V_o\approx1.05\text{ mV}}
+\Delta V_o
+\approx1.05\text{ mV}
 $$
 
-This is an idealized capacitor-ripple estimate.
-
-Actual ripple will also depend on:
-
-- Capacitor ESR
-- Capacitor ESL
-- Inductor ripple
-- Diode behavior
-- MOSFET switching
-- PCB parasitics
+This is an idealized capacitive-ripple estimate. Actual SPICE and hardware ripple can differ because of ESR, ESL, switching behavior, diode characteristics, MOSFET characteristics, and PCB parasitics.
 
 ---
 
-# 16. Capacitor Sizing
+## 17. Capacitor Sizing
 
-For a selected maximum ripple:
+The approximate capacitor-sizing equation is:
 
 $$
-C\approx
+C \approx
 \frac{I_oD}
 {f_s\Delta V_o}
 $$
 
-For example, if:
+For a 1% output-voltage ripple target:
 
 $$
-\Delta V_o=0.07\text{ V}
+\Delta V_o = 0.01\times7
 $$
 
-which corresponds to approximately 1% of 7 V:
-
 $$
-C\approx
-\frac{0.292(0.36)}
-{(100000)(0.07)}
+\Delta V_o = 0.07\text{ V}
 $$
 
 Therefore:
 
 $$
-C\approx15\ \mu F
+C \approx
+\frac{0.292\times0.36}
+{100000\times0.07}
 $$
 
-A larger practical capacitor can be selected for additional ripple margin.
-
-The hardware prototype uses:
-
 $$
-\boxed{C=220\ \mu F/35\text{ V}}
+C \approx15\ \mu\text{F}
 $$
+
+A larger practical capacitor can be selected to provide additional ripple margin.
+
+The planned hardware capacitor is:
+
+```text
+220 µF / 35 V
+```
 
 ---
 
-# 17. Critical Inductance
+## 18. Critical Inductance
 
-An approximate boundary between continuous and discontinuous conduction is:
+The approximate critical inductance for the boundary between continuous and discontinuous conduction is:
 
 $$
 L_{crit}
@@ -924,14 +668,14 @@ D=0.36
 $$
 
 $$
-R=24\Omega
+R=24\ \Omega
 $$
 
 $$
 f_s=100\text{ kHz}
 $$
 
-we obtain:
+Therefore:
 
 $$
 L_{crit}
@@ -940,23 +684,27 @@ L_{crit}
 {2(100000)}
 $$
 
+$$
+L_{crit}\approx17.7\ \mu\text{H}
+$$
+
+The selected simulation inductance is:
+
+$$
+L=100\ \mu\text{H}
+$$
+
 Therefore:
 
 $$
-\boxed{L_{crit}\approx17.7\ \mu H}
+100\ \mu\text{H} > 17.7\ \mu\text{H}
 $$
 
-Since:
-
-$$
-100\ \mu H>17.7\ \mu H
-$$
-
-the selected 100 µH inductor is above this simplified critical value.
+The simplified calculation therefore indicates CCM operation at this design point.
 
 ---
 
-# 18. Voltage Gain
+## 19. Voltage Gain
 
 The required voltage gain is:
 
@@ -971,19 +719,19 @@ $$
 Therefore:
 
 $$
-\boxed{M=1.4}
+M=1.4
 $$
 
-The converter therefore requires approximately a 1.4× voltage gain.
+The converter therefore requires a voltage gain of approximately 1.4.
 
 ---
 
-# 19. Hardware Load Calculation
+## 20. Hardware Load Calculation
 
 The planned hardware load is:
 
 $$
-R_{load}=27\Omega
+R_{load}=27\ \Omega
 $$
 
 At 7 V:
@@ -992,10 +740,8 @@ $$
 I_o=\frac{7}{27}
 $$
 
-Therefore:
-
 $$
-\boxed{I_o\approx0.259\text{ A}}
+I_o\approx0.259\text{ A}
 $$
 
 The load power is:
@@ -1004,32 +750,28 @@ $$
 P_o=\frac{7^2}{27}
 $$
 
-Therefore:
-
 $$
-\boxed{P_o\approx1.81\text{ W}}
+P_o\approx1.81\text{ W}
 $$
 
-The selected resistor is rated at:
+The selected resistor is:
 
-$$
-\boxed{10\text{ W}}
-$$
+```text
+27 Ω / 10 W
+```
 
 ---
 
-# 20. Hardware Load at 12 V
+## 21. Hardware Load at 12 V
 
-The same 27 Ω load can also be used for a future 12 V operating point.
+For an additional 12 V operating-point study:
 
 $$
 I_o=\frac{12}{27}
 $$
 
-Therefore:
-
 $$
-\boxed{I_o\approx0.444\text{ A}}
+I_o\approx0.444\text{ A}
 $$
 
 The load power becomes:
@@ -1038,26 +780,26 @@ $$
 P_o=\frac{12^2}{27}
 $$
 
-Therefore:
-
 $$
-\boxed{P_o\approx5.33\text{ W}}
+P_o\approx5.33\text{ W}
 $$
 
-The resistor will become hot at this power level and must be positioned safely with adequate ventilation.
+The 27 Ω / 10 W resistor can therefore become hot at this operating point and must be handled accordingly.
 
 ---
 
-# 21. Efficiency
+## 22. Efficiency
 
-Converter efficiency is:
+Converter efficiency is calculated as:
 
 $$
-\eta=
-\frac{P_{out}}{P_{in}}\times100
+\eta =
+\frac{P_{out}}
+{P_{in}}
+\times100
 $$
 
-Since:
+where:
 
 $$
 P_{out}=V_oI_o
@@ -1069,25 +811,25 @@ $$
 P_{in}=V_{in}I_{in}
 $$
 
-the efficiency can be written as:
+Therefore:
 
 $$
-\eta=
+\eta =
 \frac{V_oI_o}
 {V_{in}I_{in}}
 \times100
 $$
 
-No experimental efficiency value is claimed until actual input and output measurements are obtained.
+An experimental efficiency value will only be reported after actual input and output power measurements are obtained.
 
 ---
 
-# 22. Theoretical Error
+## 23. Percentage Error
 
-The theoretical and simulation results can be compared using:
+The difference between theoretical and simulation results can be calculated using:
 
 $$
-Error(\%)=
+Error(\%) =
 \frac{
 |V_{theory}-V_{simulation}|
 }
@@ -1095,7 +837,7 @@ Error(\%)=
 \times100
 $$
 
-Python:
+For example, in Python:
 
 ```python
 error_percent = (
@@ -1106,32 +848,27 @@ error_percent = (
 
 ---
 
-# 🤖 PWM GENERATOR
+# 🎛️ PWM Generator
 
-The PWM signal is responsible for controlling the MOSFET.
+The PWM signal controls the MOSFET switching.
 
-Target:
+Target PWM:
 
 ```text
 Frequency : 100 kHz
 Period    : 10 µs
 HIGH      : 5 V
 LOW       : 0 V
-Duty      : approximately 35–36%
+Duty      : approximately 36%
 ```
 
-The Arduino UNO is based on a 16 MHz ATmega328P.
+The Arduino UNO uses the ATmega328P 16 MHz system clock.
 
-For accurate 100 kHz PWM, the hardware Timer1 is used rather than relying on the default `analogWrite()` frequency.
-
----
-
-# ⚙️ Arduino Timer1 PWM
-
-For Fast PWM with ICR1 as TOP:
+For Timer1 Fast PWM with ICR1 as TOP:
 
 $$
-f_{PWM}=
+f_{PWM}
+=
 \frac{F_{CPU}}
 {N(1+ICR1)}
 $$
@@ -1142,18 +879,19 @@ $$
 F_{CPU}=16\text{ MHz}
 $$
 
-and prescaler:
+and:
 
 $$
 N=1
 $$
 
-for 100 kHz:
+For 100 kHz:
 
 $$
-100000=
+100000
+=
 \frac{16000000}
-{1(1+ICR1)}
+{1+ICR1}
 $$
 
 Therefore:
@@ -1162,51 +900,33 @@ $$
 1+ICR1=160
 $$
 
-Hence:
+and:
 
 $$
-\boxed{ICR1=159}
+ICR1=159
 $$
 
----
-
-# 🎛️ 36% PWM Calculation
-
-PWM duty cycle is approximately:
+For approximately 36% duty:
 
 $$
-D\approx
-\frac{OCR1A+1}
-{ICR1+1}
-$$
-
-For 36%:
-
-$$
-OCR1A+1
-\approx
-0.36(160)
+OCR1A\approx0.36(160)-1
 $$
 
 $$
-OCR1A+1\approx57.6
+OCR1A\approx56.6
 $$
 
-A practical integer value is:
+An integer value of approximately:
 
 $$
 OCR1A=57
 $$
 
-which produces approximately:
-
-$$
-\boxed{D\approx36.25\%}
-$$
+can be used.
 
 ---
 
-# 💻 Arduino 100 kHz PWM Code
+# 💻 Arduino UNO 100 kHz PWM Code
 
 ```cpp
 /*
@@ -1215,19 +935,13 @@ $$
 
   PWM output:
   Pin 9 (OC1A)
-
-  Frequency:
-  100 kHz
-
-  Duty:
-  approximately 36%
 */
 
 void setup()
 {
   pinMode(9, OUTPUT);
 
-  // Stop Timer1
+  // Reset Timer1
   TCCR1A = 0;
   TCCR1B = 0;
 
@@ -1250,71 +964,76 @@ void setup()
 
 void loop()
 {
-  // PWM is generated automatically by Timer1.
+  // Timer1 generates PWM automatically.
 }
 ```
 
-PWM output:
+---
 
-```text
-Arduino UNO Pin 9
-       │
-       ▼
-     10 Ω
-       │
-       ▼
-IRLZ44N Gate
-       │
-     10 kΩ
-       │
-      GND
-```
+# 📊 Theory / Simulation / Hardware Separation
+
+This project maintains a strict distinction between:
+
+| Category | Meaning |
+|---|---|
+| Theory | Equations and analytical calculations |
+| Python | Mathematical computational model |
+| SPICE | Circuit-level simulation |
+| Wokwi | Digital PWM verification |
+| Hardware | Physical implementation |
+| Experimental | Measurements from physical hardware |
+
+No hardware measurement is presented as a simulation result, and no simulation result is presented as an experimental measurement.
+---
+
+# 🐍 Python-Based Analysis
+
+Python is used as an analytical and computational environment for studying the boost converter before circuit-level simulation and hardware testing.
+
+The Python model is used to:
+
+- Generate PWM waveforms
+- Calculate boost-converter parameters
+- Calculate output voltage
+- Calculate output current
+- Calculate output power
+- Calculate inductor-current ripple
+- Calculate peak and minimum inductor current
+- Estimate capacitor voltage ripple
+- Calculate critical inductance
+- Perform parameter sweeps
+- Generate plots for analysis
+- Create theoretical datasets for further study
+
+The Python calculations are analytical and should not be interpreted as measured hardware results.
 
 ---
 
-# 🧪 Wokwi PWM Verification
+## 📈 Python PWM Simulation
 
-Before connecting the Arduino to the physical converter, PWM can be verified using Wokwi.
-
-The expected waveform is approximately:
-
-```text
-Frequency ≈ 100 kHz
-Period    ≈ 10 µs
-Duty      ≈ 36%
-HIGH      ≈ 5 V
-LOW       ≈ 0 V
-```
-
-A logic analyzer can be used to inspect:
-
-- Frequency
-- Period
-- Duty cycle
-- Pulse width
-- Logic HIGH
-- Logic LOW
-
----
-
-# 🐍 Python PWM Simulation
-
-Python is also used to create an analytical PWM waveform.
+The following Python program generates a 100 kHz PWM waveform with approximately 36% duty cycle.
 
 ```python
 import numpy as np
 import matplotlib.pyplot as plt
 
-frequency = 100_000
-duty_cycle = 36
+# ==============================
+# PWM PARAMETERS
+# ==============================
 
-V_high = 5
-V_low = 0
-
+frequency = 100_000       # 100 kHz
+duty_cycle = 36           # 36%
+V_high = 5                # HIGH voltage
+V_low = 0                 # LOW voltage
 cycles = 5
+
+# ==============================
+# CALCULATIONS
+# ==============================
 
 T = 1 / frequency
 D = duty_cycle / 100
+
 Ton = D * T
 Toff = T - Ton
 
@@ -1324,6 +1043,10 @@ print(f"Period     : {T*1e6:.3f} µs")
 print(f"Duty Cycle : {duty_cycle:.2f} %")
 print(f"Ton        : {Ton*1e6:.3f} µs")
 print(f"Toff       : {Toff*1e6:.3f} µs")
+
+# ==============================
+# TIME VECTOR
+# ==============================
 
 samples_per_cycle = 1000
 total_samples = cycles * samples_per_cycle
@@ -1335,11 +1058,19 @@ t = np.linspace(
     endpoint=False
 )
 
+# ==============================
+# PWM GENERATION
+# ==============================
+
 pwm = np.where(
     (t % T) < Ton,
     V_high,
     V_low
 )
+
+# ==============================
+# PLOT
+# ==============================
 
 plt.figure(figsize=(12, 4))
 
@@ -1353,7 +1084,7 @@ plt.xlabel("Time (µs)")
 plt.ylabel("Voltage (V)")
 
 plt.title(
-    f"PWM Signal — "
+    f"PWM Signal - "
     f"{frequency/1000:.0f} kHz, "
     f"{duty_cycle:.1f}% Duty Cycle"
 )
@@ -1363,103 +1094,155 @@ plt.grid(True)
 plt.show()
 ```
 
+### Expected PWM parameters
+
+```text
+Frequency : 100 kHz
+Period    : 10 µs
+Duty      : 36%
+Ton       : 3.6 µs
+Toff      : 6.4 µs
+HIGH      : 5 V
+LOW       : 0 V
+```
+
 ---
 
-# 🐍 Python Boost Converter Analysis
+# 🧮 Python Boost Converter Calculation
 
-The basic analytical model can be implemented using:
+The following Python model calculates the main operating parameters.
 
 ```python
-Vin = 5.0
-Vout_target = 7.0
+# ==============================
+# BOOST CONVERTER PARAMETERS
+# ==============================
 
+Vin = 5.0
 Vf = 0.7
 
 L = 100e-6
 C = 220e-6
 
 Rload = 24
-
 frequency = 100_000
+duty_cycle = 36
 
-D = 0.36
+D = duty_cycle / 100
+
+# ==============================
+# OUTPUT VOLTAGE
+# ==============================
 
 Vout_ideal = Vin / (1 - D)
 
 Vout_approx = Vout_ideal - Vf
 
+# ==============================
+# OUTPUT CURRENT
+# ==============================
+
 Iout = Vout_approx / Rload
+
+# ==============================
+# OUTPUT POWER
+# ==============================
 
 Pout = Vout_approx * Iout
 
-Delta_IL = (
-    Vin * D
-    / (L * frequency)
-)
+# ==============================
+# INPUT CURRENT
+# ==============================
 
 Iin = Pout / Vin
+
+# ==============================
+# INDUCTOR RIPPLE
+# ==============================
+
+Delta_IL = (
+    Vin * D
+) / (
+    L * frequency
+)
+
+# ==============================
+# PEAK AND MINIMUM INDUCTOR CURRENT
+# ==============================
 
 IL_peak = Iin + Delta_IL / 2
 
 IL_min = Iin - Delta_IL / 2
 
+# ==============================
+# OUTPUT RIPPLE
+# ==============================
+
 Delta_Vout = (
     Iout * D
-    / (frequency * C)
+) / (
+    frequency * C
 )
 
-print("Output voltage:", Vout_approx)
-print("Output current:", Iout)
-print("Output power:", Pout)
-print("Input current:", Iin)
-print("Inductor ripple:", Delta_IL)
-print("Peak inductor current:", IL_peak)
-print("Minimum inductor current:", IL_min)
-print("Output ripple:", Delta_Vout)
+# ==============================
+# DISPLAY RESULTS
+# ==============================
+
+print("========== BOOST CONVERTER ==========")
+
+print(f"Input Voltage        : {Vin:.2f} V")
+print(f"Duty Cycle           : {duty_cycle:.2f} %")
+print(f"Switching Frequency  : {frequency/1000:.2f} kHz")
+
+print(f"Ideal Output Voltage : {Vout_ideal:.3f} V")
+print(f"Approx. Output       : {Vout_approx:.3f} V")
+
+print(f"Output Current       : {Iout:.3f} A")
+print(f"Output Power         : {Pout:.3f} W")
+
+print(f"Input Current        : {Iin:.3f} A")
+
+print(f"Inductor Ripple      : {Delta_IL:.3f} A")
+print(f"Peak Inductor Current: {IL_peak:.3f} A")
+print(f"Minimum Inductor     : {IL_min:.3f} A")
+
+print(f"Output Ripple        : {Delta_Vout:.6f} V")
 ```
 
 ---
 
-# 🗃️ Parametric Dataset
+# 📊 Parametric Analysis
 
-A Python-generated analytical dataset can be used to study converter behavior over a large parameter space.
+One of the main objectives of this project is to study how different converter parameters influence its behavior.
 
-The dataset parameters include:
+The following parameters can be varied:
 
-```text
-Input Voltage
-Duty Cycle
-Switching Frequency
-Inductance
-Capacitance
-Load Resistance
-```
+| Parameter | Values |
+|---|---|
+| Input voltage | 5 V |
+| Duty cycle | 20–60% |
+| Switching frequency | 50–200 kHz |
+| Inductance | 47–330 µH |
+| Capacitance | 47–470 µF |
+| Load resistance | 10–68 Ω |
 
-Calculated quantities include:
+The main output parameters are:
 
-```text
-Ideal Output Voltage
-Approximate Output Voltage
-Output Current
-Output Power
-Input Current
-Inductor Current Ripple
-Peak Inductor Current
-Minimum Inductor Current
-Output Voltage Ripple
-Critical Inductance
-Conduction Mode
-```
-
-The analytical dataset is clearly separated from SPICE and experimental data.
+- Output voltage
+- Output current
+- Output power
+- Inductor-current ripple
+- Output-voltage ripple
+- Peak inductor current
+- Minimum inductor current
+- Conduction mode
 
 ---
 
-# 📊 PARAMETRIC ANALYSIS
+# 🔄 Duty Cycle Sweep
 
-## Duty Cycle Sweep
+The duty cycle can be varied while keeping the other parameters constant.
 
-Example:
+Example values:
 
 ```text
 20%
@@ -1477,16 +1260,20 @@ Example:
 The theoretical relationship is:
 
 $$
-V_o=\frac{V_{in}}{1-D}
+V_o = \frac{V_{in}}{1-D}
 $$
 
-As duty cycle changes, the theoretical output voltage changes accordingly.
+This sweep can be used to study the relationship between PWM duty cycle and output voltage.
+
+### Objective
+
+Determine how accurately the simulated converter follows the theoretical boost-converter relationship.
 
 ---
 
 # ⚡ Switching Frequency Sweep
 
-Example:
+Example frequencies:
 
 ```text
 50 kHz
@@ -1496,13 +1283,29 @@ Example:
 200 kHz
 ```
 
-Increasing switching frequency generally changes the required energy-storage components and ripple characteristics.
+The switching frequency affects:
+
+- Inductor ripple
+- Capacitor ripple
+- Switching losses
+- Component stress
+- Filter requirements
+
+For a fixed duty cycle and inductance:
+
+$$
+\Delta I_L =
+\frac{V_{in}D}
+{Lf_s}
+$$
+
+Therefore, increasing switching frequency generally reduces the calculated inductor-current ripple.
 
 ---
 
 # 🌀 Inductance Sweep
 
-Example:
+Example values:
 
 ```text
 47 µH
@@ -1513,85 +1316,601 @@ Example:
 330 µH
 ```
 
-The simplified current-ripple relationship is:
+The inductor ripple relationship is:
 
 $$
-\Delta I_L=
-\frac{V_{in}D}{Lf_s}
+\Delta I_L =
+\frac{V_{in}D}
+{Lf_s}
 $$
 
-Therefore, for constant input voltage, duty cycle, and switching frequency:
+Therefore:
 
 $$
-\Delta I_L\propto\frac{1}{L}
+\Delta I_L \propto \frac{1}{L}
 $$
 
-Increasing inductance generally reduces inductor-current ripple.
+Increasing inductance reduces the theoretical current ripple for the same operating point.
 
 ---
 
 # 🔋 Capacitance Sweep
 
-Example:
+Example values:
 
 ```text
 47 µF
 100 µF
 220 µF
 470 µF
-1000 µF
 ```
 
-The simplified capacitor ripple relationship is:
+The simplified output ripple relationship is:
 
 $$
 \Delta V_o
 \approx
-\frac{I_oD}{f_sC}
+\frac{I_oD}
+{f_sC}
 $$
 
 Therefore:
 
 $$
-\Delta V_o\propto\frac{1}{C}
+\Delta V_o \propto \frac{1}{C}
 $$
 
-Increasing capacitance generally reduces the idealized capacitive component of output-voltage ripple.
+Increasing capacitance generally reduces the calculated capacitive component of output-voltage ripple.
+
+Actual ripple also depends on capacitor ESR, ESL, switching behavior, diode characteristics, MOSFET characteristics, and layout parasitics.
 
 ---
 
 # 🔌 Load Resistance Sweep
 
-Example:
+Example values:
 
 ```text
 10 Ω
 15 Ω
 22 Ω
-24 Ω
 27 Ω
 33 Ω
 47 Ω
 68 Ω
 ```
 
-Load current is:
+For a resistive load:
 
 $$
-I_o=\frac{V_o}{R}
+I_o = \frac{V_o}{R}
 $$
 
-and output power is:
+and:
 
 $$
-P_o=\frac{V_o^2}{R}
+P_o = \frac{V_o^2}{R}
 $$
+
+Changing the load allows the converter to be evaluated under different output-current conditions.
 
 ---
 
-# 📈 Planned Analysis Graphs
+# 📐 Theoretical vs Simulation Analysis
 
-The following plots will be generated as the analysis is completed:
+Theoretical calculations provide an idealized reference.
+
+KiCad/SPICE provides a circuit-level simulation that includes the modeled behavior of the components.
+
+The comparison can be expressed as:
+
+$$
+Error(\%)
+=
+\frac{
+|V_{theory}-V_{simulation}|
+}
+{V_{theory}}
+\times100
+$$
+
+The same method can be applied to other parameters such as:
+
+- Output voltage
+- Inductor current
+- Ripple voltage
+- Ripple current
+
+Theoretical and SPICE results should be clearly identified separately.
+
+---
+
+# 🖥️ KiCad / SPICE Simulation
+
+The converter is modeled in KiCad using a switching power-stage topology.
+
+### Main simulation components
+
+```text
+Input source       : 5 V DC
+Inductor           : 100 µH
+MOSFET             : IRLZ44N / NMOS model
+Diode              : Schottky diode
+Output capacitor   : 220 µF
+Simulation load    : 24 Ω
+PWM source         : 0–5 V
+Switching frequency: 100 kHz
+Duty cycle         : 36%
+```
+
+### Simulation topology
+
+```text
+                 L1
+5 V ─────────── 100 µH ────────●──────|>|────── +VOUT
+                               │        D1
+                               │
+                              D
+                           Q1 NMOS
+                              S
+                               │
+                              GND
+
++VOUT ───────────── C1 ───────────── GND
+             220 µF
+
++VOUT ─────────── RLOAD ─────────── GND
+                  24 Ω
+
+PWM ───────────── Gate
+```
+
+The schematic is maintained in the KiCad project files.
+
+---
+
+# 🔬 Simulation Measurements
+
+The following waveforms can be examined in KiCad SPICE:
+
+- PWM gate voltage
+- MOSFET drain voltage
+- MOSFET current
+- Inductor current
+- Diode current
+- Capacitor current
+- Output voltage
+- Load current
+- Input current
+
+The transient response can also be used to study:
+
+- Startup overshoot
+- Startup undershoot
+- Steady-state output voltage
+- Switching behavior
+- Ripple
+- Current transients
+
+---
+
+# 📡 PWM Verification Using Wokwi
+
+The Arduino PWM generation was also verified using a virtual Arduino environment.
+
+The verification setup uses:
+
+```text
+Arduino UNO
+     │
+     │ Pin 9 / OC1A
+     ▼
+Logic Analyzer
+```
+
+The generated PWM target is approximately:
+
+```text
+Frequency : 100 kHz
+Duty      : ≈36%
+Voltage   : 0–5 V
+```
+
+The digital waveform can be exported and analyzed using logic-analyzer software such as PulseView.
+
+This provides a software-based verification method before connecting the Arduino to the physical power stage.
+
+---
+
+# 🧪 Hardware Development
+
+The physical prototype is being developed separately from the simulation.
+
+### Planned hardware components
+
+| Component | Value / Part |
+|---|---|
+| Input supply | 5 V / 2 A |
+| MOSFET | IRLZ44N |
+| Inductor | 100 µH / approximately 2 A |
+| Diode | 1N5822 Schottky |
+| Output capacitor | 220 µF / 35 V |
+| Load resistor | 27 Ω / 10 W |
+| Gate resistor | 10 Ω |
+| Gate pulldown | 10 kΩ |
+| Controller | Arduino UNO |
+
+The physical implementation will be tested initially at the lower-voltage 5 V → 7 V operating point.
+
+The 5 V → 12 V operating point can then be investigated after the lower-voltage operation is verified.
+
+---
+
+# ⚠️ Hardware Limitations
+
+The breadboard implementation is intended as a prototype.
+
+At 100 kHz, parasitic effects can become significant.
+
+Important practical effects include:
+
+- MOSFET switching losses
+- MOSFET RDS(on)
+- Diode forward voltage
+- Diode reverse recovery
+- Inductor DCR
+- Inductor saturation
+- Capacitor ESR
+- Capacitor ESL
+- Breadboard parasitic capacitance
+- Wiring inductance
+- Gate-drive limitations
+- Switching-node ringing
+- Thermal effects
+
+Therefore, the physical results may differ from the ideal calculations and SPICE model.
+
+---
+
+# 🔥 Thermal Considerations
+
+At the 12 V operating point using a 27 Ω load:
+
+$$
+P_{load}
+=
+\frac{12^2}{27}
+$$
+
+$$
+P_{load}\approx5.33\text{ W}
+$$
+
+The 10 W resistor therefore dissipates significant heat.
+
+The resistor should be positioned away from heat-sensitive components and should not be touched during operation.
+
+The MOSFET may also require thermal management depending on switching losses and operating conditions.
+
+---
+
+# 🛡️ Safety
+
+This project is designed around a low-voltage DC input.
+
+The converter must **not** be connected directly to household AC mains.
+
+The initial hardware test should use a regulated 5 V DC source.
+
+Before applying power:
+
+- Verify MOSFET pin connections.
+- Verify diode polarity.
+- Verify capacitor polarity.
+- Verify input polarity.
+- Verify the load resistance.
+- Verify Arduino and power-stage ground.
+- Check for input-to-ground shorts.
+- Check for output-to-ground shorts.
+- Verify the PWM signal before connecting it to the MOSFET gate.
+- Start with the 5 V → 7 V operating point.
+
+---
+
+# 🧠 Why 5 V → 7 V Was Selected
+
+The 5 V → 7 V conversion provides a relatively low conversion ratio while still demonstrating the fundamental operation of a boost converter.
+
+It allows the project to investigate:
+
+```text
+PWM control
+      ↓
+MOSFET switching
+      ↓
+Inductor energy storage
+      ↓
+Diode energy transfer
+      ↓
+Capacitor filtering
+      ↓
+Boosted DC output
+```
+
+The same power-stage concept can subsequently be evaluated for a higher output such as 12 V.
+
+---
+
+# 🚀 Future Scope
+
+The current project provides a foundation for several improvements.
+
+## 1. Closed-Loop Voltage Regulation
+
+The current design primarily uses fixed-duty PWM.
+
+A future version can measure the output voltage and automatically adjust the PWM duty cycle.
+
+```text
+VOUT
+ │
+ ▼
+Voltage Sensor
+ │
+ ▼
+Controller
+ │
+ ▼
+PWM
+ │
+ ▼
+MOSFET
+ │
+ ▼
+Boost Converter
+ │
+ └─────────────── feedback ────────────────┘
+```
+
+This would allow the converter to compensate for changes in input voltage and load.
+
+---
+
+## 2. PID Control
+
+A PID controller can be investigated for closed-loop voltage regulation.
+
+The controller can use:
+
+$$
+e(t)=V_{ref}-V_o(t)
+$$
+
+where:
+
+- $V_{ref}$ = desired output voltage
+- $V_o$ = measured output voltage
+- $e(t)$ = voltage error
+
+The PWM duty cycle can then be adjusted according to the control error.
+
+---
+
+## 3. Soft-Start
+
+A soft-start mechanism can gradually increase the duty cycle during startup.
+
+This can reduce:
+
+- Startup current
+- Output-voltage overshoot
+- Component stress
+
+---
+
+## 4. Gate Driver
+
+A dedicated MOSFET gate driver can be investigated instead of driving the MOSFET directly from the Arduino.
+
+A gate driver can provide:
+
+- Higher peak gate current
+- Faster switching
+- Better MOSFET turn-on
+- Better MOSFET turn-off
+- Reduced switching losses
+
+---
+
+## 5. PCB Implementation
+
+The breadboard prototype can eventually be converted into a dedicated PCB.
+
+The PCB design can focus on:
+
+- Short switching loops
+- Low parasitic inductance
+- Proper grounding
+- Thermal management
+- Decoupling
+- EMI reduction
+- Component placement
+
+---
+
+## 6. Efficiency Optimization
+
+Future analysis can investigate:
+
+$$
+\eta =
+\frac{P_{out}}
+{P_{in}}
+\times100
+$$
+
+The effect of:
+
+- MOSFET selection
+- Diode selection
+- Switching frequency
+- Inductor DCR
+- Gate-drive losses
+- Load current
+
+can be studied.
+
+---
+
+## 7. Automatic Parameter Optimization
+
+Python can be extended to search for suitable combinations of:
+
+```text
+Duty cycle
+Inductance
+Capacitance
+Switching frequency
+Load resistance
+```
+
+The objective can be to minimize:
+
+```text
+Output ripple
+Inductor ripple
+Power loss
+```
+
+while maintaining the required output voltage.
+
+---
+
+## 8. Machine-Learning-Assisted Optimization
+
+A future research extension can generate large numbers of simulation cases and use them to train a machine-learning model.
+
+Possible inputs:
+
+```text
+Vin
+Duty cycle
+Switching frequency
+Inductance
+Capacitance
+Load resistance
+```
+
+Possible predictions:
+
+```text
+Vout
+Output ripple
+Inductor ripple
+Efficiency
+Peak current
+```
+
+The ML model can then be investigated as a fast surrogate for repeated converter simulations.
+
+---
+
+## 9. Automated SPICE Dataset Generation
+
+Python can automatically generate many converter operating points.
+
+For example:
+
+```text
+Duty cycle
+Frequency
+Inductance
+Capacitance
+Load
+```
+
+can be swept automatically.
+
+The resulting dataset can be used for:
+
+- Statistical analysis
+- Parameter optimization
+- Machine-learning experiments
+- Theoretical comparison
+- Design-space exploration
+
+---
+
+# 📁 Project Structure
+
+```text
+5V-to-7V-Boost-Converter/
+│
+├── README.md
+│
+├── KiCad/
+│   └── Exp_1/
+│       ├── Exp_1.kicad_pro
+│       ├── Exp_1.kicad_sch
+│       └── Exp_1.kicad_pcb
+│
+├── Arduino/
+│   └── 100kHz_PWM/
+│       └── pwm_100khz.ino
+│
+├── Python/
+│   ├── pwm_simulation.py
+│   ├── boost_converter_analysis.py
+│   └── parametric_analysis.py
+│
+├── Wokwi/
+│   ├── diagram.json
+│   ├── wokwi.toml
+│   └── pwm_test.ino
+│
+├── Data/
+│   └── boost_converter_theoretical_dataset.csv
+│
+├── Results/
+│   ├── KiCad/
+│   ├── Wokwi/
+│   └── Python/
+│
+├── Documentation/
+│   └── design_calculations.pdf
+│
+└── LICENSE
+```
+
+---
+
+# 📋 Current Project Status
+
+| Stage | Status |
+|---|---|
+| Converter topology | ✅ Completed |
+| Mathematical design | ✅ Completed |
+| Component calculations | ✅ Completed |
+| Python PWM model | ✅ Completed |
+| Python analytical model | ✅ Completed |
+| KiCad schematic | ✅ Completed |
+| KiCad SPICE simulation | ✅ Completed |
+| Arduino PWM generation | ✅ Developed |
+| Wokwi PWM verification | ✅ Completed |
+| Parametric analysis | 🔄 In progress |
+| Physical prototype | 🔄 In progress |
+| Hardware measurements | ⏳ Pending |
+| Theory vs hardware comparison | ⏳ Pending |
+| Efficiency measurement | ⏳ Pending |
+| Closed-loop control | 🔮 Future |
+| PCB optimization | 🔮 Future |
+| ML-based optimization | 🔮 Future |
+
+---
+
+# 📊 Planned Results
+
+The following results will be added after the corresponding simulations or measurements are completed:
 
 ```text
 1. Output Voltage vs Duty Cycle
@@ -1602,866 +1921,191 @@ The following plots will be generated as the analysis is completed:
 
 4. Output Voltage vs Switching Frequency
 
-5. Output Voltage vs Load Resistance
+5. Output Voltage vs Load
 
-6. Theoretical Output Voltage vs Simulation Output Voltage
+6. Inductor Current Waveform
 
-7. Input Current vs Duty Cycle
+7. MOSFET Gate PWM Waveform
 
-8. Peak Inductor Current vs Inductance
+8. Output Voltage Transient Response
 
-9. Output Power vs Load Resistance
+9. Theoretical vs SPICE Simulation
 
-10. Efficiency vs Load
+10. Simulation vs Hardware
+
+11. Efficiency vs Load
+
+12. Input Current vs Output Power
 ```
 
-No broken image links are included in this README.
-
-Actual graphs will be added only after their corresponding files are generated and committed to the repository.
+Only completed and verified plots should be placed in the final results section.
 
 ---
 
-# 🖥️ KiCad / SPICE Simulation
+# 📌 Important Engineering Distinction
 
-The KiCad project contains the boost-converter schematic.
+This repository contains multiple levels of analysis.
 
-Current project structure:
+### Mathematical Model
+
+Uses ideal or simplified equations.
+
+### Python Model
+
+Uses numerical calculations and analytical equations.
+
+### SPICE Model
+
+Uses circuit-level simulation with component models.
+
+### Wokwi
+
+Used for digital PWM verification.
+
+### Hardware
+
+Represents the physical converter and requires actual measurements.
+
+These levels are kept separate to avoid presenting theoretical or simulated values as experimental measurements.
+
+---
+
+# 📚 Applications
+
+A low-voltage boost converter can be used in applications such as:
+
+- Battery-powered electronics
+- Embedded systems
+- Portable electronics
+- Sensor systems
+- Low-voltage DC power supplies
+- Microcontroller-based power systems
+- Energy harvesting systems
+- Power-management circuits
+
+---
+
+# 🎯 Project Objectives
+
+The main objectives are:
+
+1. Design a 5 V to 7 V boost converter.
+2. Derive the required duty cycle analytically.
+3. Select suitable inductor and capacitor values.
+4. Analyze current and voltage ripple.
+5. Develop the circuit in KiCad.
+6. Perform SPICE transient simulation.
+7. Generate 100 kHz PWM using an Arduino UNO.
+8. Verify PWM digitally using Wokwi.
+9. Perform Python-based parameter analysis.
+10. Compare theoretical and simulation results.
+11. Develop a physical prototype.
+12. Investigate efficiency and practical losses.
+13. Provide a foundation for closed-loop control and optimization.
+
+---
+
+# 📝 Limitations
+
+The current design has several limitations:
+
+- The initial control strategy is open-loop PWM.
+- The analytical model uses simplified component assumptions.
+- Real component parasitics are not fully represented by simple equations.
+- Hardware measurements are required for experimental validation.
+- Breadboard parasitics can influence high-frequency switching behavior.
+- Converter efficiency cannot be established from theoretical calculations alone.
+- A dedicated gate driver is not included in the initial prototype.
+- Closed-loop regulation is not yet implemented.
+
+---
+
+# 🔬 Research Extension
+
+The project can be extended from a conventional converter-design project into a systematic research study by investigating the relationship between converter parameters and performance.
+
+A possible research workflow is:
 
 ```text
-kicad/
-└── Exp_1/
-    ├── Exp_1.kicad_pro
-    └── Exp_1.kicad_sch
+Mathematical Model
+        ↓
+Python Parameter Sweep
+        ↓
+SPICE Simulation
+        ↓
+Simulation Dataset
+        ↓
+Statistical / ML Analysis
+        ↓
+Parameter Optimization
+        ↓
+Hardware Validation
+        ↓
+Theory vs Simulation vs Hardware
 ```
 
-The schematic contains:
-
-- 5 V DC input
-- 100 µH inductor
-- NMOS switching device
-- PWM voltage source
-- Diode
-- Output capacitor
-- Resistive load
-- Ground
-- Switching network
+This provides a structured path from theoretical design to computational analysis and experimental validation.
 
 ---
 
-# 📈 SPICE Waveforms
+# 🏁 Conclusion
 
-The simulation can be used to investigate:
+This project presents the design and analysis of a high-frequency 5 V to 7 V boost converter operating at approximately 100 kHz.
 
-### Output Voltage
-
-$$
-V_{out}(t)
-$$
-
-### Gate Voltage
-
-$$
-V_G(t)
-$$
-
-### Inductor Current
-
-$$
-I_L(t)
-$$
-
-### Diode Current
-
-$$
-I_D(t)
-$$
-
-### MOSFET Current
-
-$$
-I_{MOSFET}(t)
-$$
-
-### Capacitor Current
-
-$$
-I_C(t)
-$$
-
-These waveforms can be used to analyze:
-
-- Startup transient
-- Output settling
-- Switching behavior
-- Inductor ripple
-- Output ripple
-- Peak current
-- Switching-node behavior
-- MOSFET current
-- Diode current
-
----
-
-# ⚡ Startup Transient
-
-A switching converter can show a startup transient when the simulation begins.
-
-Possible causes include:
-
-- Initially uncharged capacitor
-- Inductor initial conditions
-- Sudden application of PWM
-- Switching-node ringing
-- Diode behavior
-- MOSFET model behavior
-- Parasitic elements
-
-Therefore, the startup peak should not automatically be treated as the steady-state output voltage.
-
-Steady-state values should be measured after the transient has settled.
-
----
-
-# 🧠 Theory vs Simulation
-
-The project distinguishes between three types of results.
-
-| Result | Meaning |
-|---|---|
-| Theoretical | Obtained from mathematical equations |
-| Analytical | Obtained using Python mathematical models |
-| Simulation | Obtained from KiCad/SPICE |
-| Experimental | Obtained from physical hardware |
-
-The results are not mixed together.
-
-For example:
+The design process includes:
 
 ```text
-Theoretical:
-Vout calculated from boost equation
-
-Analytical:
-Vout calculated by Python
-
-Simulation:
-Vout measured from SPICE waveform
-
-Experimental:
-Vout measured from physical prototype
+Theory
+  ↓
+Component Calculations
+  ↓
+Python Analysis
+  ↓
+KiCad Schematic
+  ↓
+SPICE Simulation
+  ↓
+Arduino PWM
+  ↓
+Wokwi Verification
+  ↓
+Hardware Prototype
+  ↓
+Experimental Validation
 ```
 
----
+The analytical design establishes the expected converter behavior, while KiCad/SPICE provides circuit-level simulation. Python provides a flexible environment for parameter sweeps and data analysis, and Arduino/Wokwi provides a method for developing and verifying the PWM control signal.
 
-# 🔬 Experimental Validation
-
-The planned physical test setup is:
-
-```text
-5 V / 2 A DC Supply
-        │
-        ▼
-    100 µH Inductor
-        │
-        ●───────────┐
-        │           │
-        ▼           ▼
-    IRLZ44N       1N5822
-        │           │
-       GND          ├──────── +VOUT
-                    │
-              ┌─────┴─────┐
-              │           │
-           220 µF      27 Ω / 10 W
-              │           │
-             GND         GND
-```
-
-Arduino control:
-
-```text
-Arduino UNO
-     │
-100 kHz PWM
-     │
-    10 Ω
-     │
-IRLZ44N Gate
-     │
-    10 kΩ
-     │
-    GND
-```
-
----
-
-# 📏 Planned Hardware Measurements
-
-The physical prototype will eventually be evaluated for:
-
-- Input voltage
-- Input current
-- Output voltage
-- Output current
-- Output ripple
-- PWM frequency
-- PWM duty cycle
-- Inductor current
-- MOSFET temperature
-- Diode temperature
-- Load temperature
-- Input power
-- Output power
-- Efficiency
-- Startup transient
-
----
-
-# 📊 Theory vs SPICE vs Hardware
-
-| Parameter | Theory | SPICE | Hardware |
-|---|---:|---:|---:|
-| Input voltage | 5 V | To be verified | Pending |
-| Output voltage | 7 V target | To be measured | Pending |
-| Duty cycle | 28.57% ideal / ≈35.06% practical | 36% | Pending |
-| Switching frequency | 100 kHz | 100 kHz target | Pending |
-| Output current | Calculated | To be measured | Pending |
-| Output power | Calculated | To be measured | Pending |
-| Input current | Estimated | To be measured | Pending |
-| Output ripple | Calculated | To be measured | Pending |
-| Inductor ripple | Calculated | To be measured | Pending |
-| Efficiency | Calculated from measurements | Pending | Pending |
-
----
-
-# 🔥 Real-World Component Effects
-
-The ideal equations do not include every real-world loss.
-
-## MOSFET
-
-Important parameters include:
-
-$$
-R_{DS(on)}
-$$
-
-and switching losses.
-
-## Diode
-
-The diode introduces:
-
-$$
-V_D
-$$
-
-and may also introduce switching and reverse-recovery losses.
-
-## Inductor
-
-A real inductor has:
-
-- DC resistance
-- Core losses
-- Saturation
-- Parasitic capacitance
-
-## Capacitor
-
-A real capacitor has:
-
-- ESR
-- ESL
-- Leakage
-- Ripple-current limitations
-
-## PCB
-
-PCB parasitics can introduce:
-
-- Additional inductance
-- Additional resistance
-- Switching-node ringing
-- EMI
-
-Therefore, theoretical calculations provide the starting point, while SPICE and hardware measurements provide progressively more realistic results.
-
----
-
-# 🌡️ Thermal Analysis
-
-For the 27 Ω hardware load at 7 V:
-
-$$
-P_R=\frac{V^2}{R}
-$$
-
-$$
-P_R=\frac{7^2}{27}
-$$
-
-$$
-\boxed{P_R\approx1.81\text{ W}}
-$$
-
-At 12 V:
-
-$$
-P_R=\frac{12^2}{27}
-$$
-
-$$
-\boxed{P_R\approx5.33\text{ W}}
-$$
-
-Therefore, the 27 Ω / 10 W resistor can become significantly hot during operation.
-
-The MOSFET and diode also require consideration of their power dissipation and temperature.
-
----
-
-# ⚠️ Safety
-
-This project is intended for **low-voltage DC operation**.
-
-Do not connect the boost converter directly to household AC mains.
-
-The converter input is:
-
-$$
-\boxed{5\text{ V DC}}
-$$
-
-The switching frequency is:
-
-$$
-\boxed{100\text{ kHz}}
-$$
-
-The 100 kHz switching frequency is generated electronically by PWM and is unrelated to the 50 Hz household AC frequency.
-
-Before applying power:
-
-- Verify MOSFET pin connections.
-- Verify diode polarity.
-- Verify capacitor polarity.
-- Verify input and output grounds.
-- Verify there is no short circuit.
-- Verify PWM frequency.
-- Verify PWM duty cycle.
-- Verify gate pulldown.
-- Keep the switching loop physically short.
-- Do not touch the 27 Ω resistor during operation.
-- Use an appropriate current-limited supply when possible.
-
----
-
-# 📁 Repository Structure
-
-```text
-5V-to-7V-Boost-Converter/
-│
-├── kicad/
-│   └── Exp_1/
-│       ├── Exp_1.kicad_pro
-│       └── Exp_1.kicad_sch
-│
-├── notebooks/
-│   ├── boost_converter_analysis.ipynb
-│   └── boost_converter_pwm.ipynb
-│
-├── results/
-│   ├── schematic/
-│   ├── plots/
-│   ├── simulation/
-│   └── animations/
-│
-├── data/
-│   └── boost_converter_theoretical_dataset.csv
-│
-├── Arduino/
-│   └── 100kHz_PWM/
-│       └── pwm_100khz.ino
-│
-├── Wokwi/
-│   ├── diagram.json
-│   └── pwm_test.ino
-│
-├── documentation/
-│
-├── README.md
-├── requirements.txt
-└── .gitignore
-```
-
----
-
-# 🧰 Software and Tools
-
-| Tool | Purpose |
-|---|---|
-| KiCad 10 | Schematic and PCB design |
-| SPICE | Circuit simulation |
-| Python | Numerical analysis |
-| NumPy | Numerical computation |
-| Pandas | Dataset processing |
-| SciPy | Scientific computation |
-| Matplotlib | Graph generation |
-| Jupyter Notebook | Interactive analysis |
-| Arduino IDE | Arduino programming |
-| Arduino UNO | PWM generation |
-| Wokwi | PWM verification |
-| PulseView | Digital waveform analysis |
-| GitHub | Version control |
-
----
-
-# 📦 Hardware Components
-
-| Component | Specification | Purpose |
-|---|---|---|
-| DC Supply | 5 V / 2 A | Input source |
-| L1 | 100 µH | Energy storage |
-| Q1 | IRLZ44N | Switching device |
-| D1 | 1N5822 | Rectification |
-| C1 | 220 µF / 35 V | Output filtering |
-| RLOAD | 27 Ω / 10 W | Hardware load |
-| RG | 10 Ω | Gate resistor |
-| RPD | 10 kΩ | Gate pulldown |
-| Controller | Arduino UNO | PWM generation |
-
----
-
-# 📚 Key Equations
-
-## Boost Converter
-
-$$
-\boxed{
-V_o=\frac{V_{in}}{1-D}
-}
-$$
-
-## Ideal Duty Cycle
-
-$$
-\boxed{
-D=1-\frac{V_{in}}{V_o}
-}
-$$
-
-## Practical Duty Cycle
-
-$$
-\boxed{
-D\approx1-\frac{V_{in}}{V_o+V_D}
-}
-$$
-
-## Switching Period
-
-$$
-\boxed{
-T=\frac{1}{f_s}
-}
-$$
-
-## ON Time
-
-$$
-\boxed{
-T_{ON}=DT
-}
-$$
-
-## OFF Time
-
-$$
-\boxed{
-T_{OFF}=(1-D)T
-}
-$$
-
-## Inductor Ripple
-
-$$
-\boxed{
-\Delta I_L=
-\frac{V_{in}D}{Lf_s}
-}
-$$
-
-## Inductor Sizing
-
-$$
-\boxed{
-L=
-\frac{V_{in}D}
-{f_s\Delta I_L}
-}
-$$
-
-## Output Current
-
-$$
-\boxed{
-I_o=\frac{V_o}{R}
-}
-$$
-
-## Output Power
-
-$$
-\boxed{
-P_o=V_oI_o
-}
-$$
-
-## Capacitor Ripple
-
-$$
-\boxed{
-\Delta V_o
-\approx
-\frac{I_oD}{f_sC}
-}
-$$
-
-## Capacitor Sizing
-
-$$
-\boxed{
-C\approx
-\frac{I_oD}
-{f_s\Delta V_o}
-}
-$$
-
-## Critical Inductance
-
-$$
-\boxed{
-L_{crit}
-\approx
-\frac{D(1-D)^2R}
-{2f_s}
-}
-$$
-
-## Voltage Gain
-
-$$
-\boxed{
-M=\frac{V_o}{V_{in}}
-}
-$$
-
-## Efficiency
-
-$$
-\boxed{
-\eta=
-\frac{P_{out}}
-{P_{in}}\times100
-}
-$$
-
-## Percentage Error
-
-$$
-\boxed{
-Error(\%)=
-\frac{|V_{theory}-V_{simulation}|}
-{V_{theory}}\times100
-}
-$$
-
----
-
-# 📊 Design Summary
-
-| Quantity | Calculated / Selected Value |
-|---|---:|
-| Input voltage | 5 V |
-| Target output voltage | 7 V |
-| Voltage gain | 1.4 |
-| Ideal duty cycle | 28.57% |
-| Practical duty cycle | ≈35.06% |
-| Simulation duty cycle | 36% |
-| Switching frequency | 100 kHz |
-| Switching period | 10 µs |
-| ON time | 3.6 µs |
-| OFF time | 6.4 µs |
-| Simulation inductor | 100 µH |
-| Approx. inductor ripple | 0.18 A |
-| Approx. peak inductor current | 0.498 A |
-| Approx. minimum inductor current | 0.318 A |
-| Simulation load | 24 Ω |
-| Simulation output current at 7 V | 0.292 A |
-| Simulation output power at 7 V | 2.04 W |
-| Simulation capacitor | 1000 µF |
-| Approx. capacitor ripple | 1.05 mV |
-| Approx. critical inductance | 17.7 µH |
-| Hardware capacitor | 220 µF / 35 V |
-| Hardware load | 27 Ω / 10 W |
-| Hardware current at 7 V | 0.259 A |
-| Hardware load power at 7 V | 1.81 W |
-| Hardware load current at 12 V | 0.444 A |
-| Hardware load power at 12 V | 5.33 W |
-
----
-
-# 🧠 Engineering Questions Investigated
-
-The project investigates:
-
-### 1. Duty Cycle
-
-How does PWM duty cycle influence output voltage?
-
-### 2. Switching Frequency
-
-How does switching frequency affect ripple and component requirements?
-
-### 3. Inductance
-
-How does inductance affect inductor-current ripple?
-
-### 4. Capacitance
-
-How does capacitance affect output-voltage ripple?
-
-### 5. Load Resistance
-
-How does load resistance affect output current and power?
-
-### 6. Component Non-Idealities
-
-How do MOSFET, diode, inductor, capacitor, and PCB losses affect the converter?
-
-### 7. Theory vs Simulation
-
-How closely does the analytical model agree with SPICE?
-
-### 8. Simulation vs Hardware
-
-How closely does the physical prototype reproduce the simulated behavior?
-
----
-
-# 🚀 Development Roadmap
-
-```mermaid
-flowchart LR
-    A["Theory"] --> B["Design Calculations"]
-    B --> C["Python Model"]
-    C --> D["KiCad Schematic"]
-    D --> E["SPICE Simulation"]
-    E --> F["Parametric Analysis"]
-    F --> G["Arduino PWM"]
-    G --> H["Wokwi Verification"]
-    H --> I["PCB Design"]
-    I --> J["Hardware Prototype"]
-    J --> K["Experimental Measurements"]
-    K --> L["Theory vs Hardware"]
-    L --> M["Optimization"]
-    M --> N["Closed-Loop Control"]
-```
-
----
-
-# 📌 Current Project Status
-
-| Development Area | Status |
-|---|:---:|
-| Boost converter theory | 🟢 Completed |
-| Design calculations | 🟢 Completed |
-| Python analytical model | 🟢 Completed |
-| KiCad schematic | 🟢 Completed |
-| Initial SPICE simulation | 🟢 Completed |
-| PWM mathematical model | 🟢 Completed |
-| Wokwi PWM verification | 🟢 Completed |
-| Dataset generation | 🟡 In progress |
-| Parameter sweep | 🟡 In progress |
-| Result graphs | 🟡 In progress |
-| Arduino hardware PWM | 🟡 In progress |
-| PCB design | 🔴 Planned |
-| Physical prototype | 🟡 In progress |
-| Experimental measurements | 🔴 Pending |
-| Efficiency measurement | 🔴 Pending |
-| Thermal measurements | 🔴 Pending |
-| Theory vs hardware | 🔴 Pending |
-| Closed-loop regulation | 🔴 Planned |
-
-### Status Legend
-
-🟢 Completed  
-🟡 In Progress  
-🔴 Planned / Pending
-
----
-
-# ⚠️ Current Limitations
-
-The current work combines analytical modelling and simulation with planned hardware development.
-
-Current limitations include:
-
-- Real component tolerances are not fully represented.
-- MOSFET switching losses may differ from the simplified model.
-- Diode forward voltage changes with current and temperature.
-- Inductor DCR and saturation are not completely represented in the simplified equations.
-- Capacitor ESR and ESL are not included in the ideal ripple equations.
-- PCB parasitics have not yet been included.
-- Experimental efficiency has not yet been measured.
-- Experimental oscilloscope measurements are pending.
-- Hardware results will be added only after actual measurements.
-- The current control method is open-loop PWM.
-- Closed-loop voltage regulation is future work.
-
----
-
-# 🔬 Future Work
-
-Future development includes:
-
-- [x] Mathematical boost-converter analysis
-- [x] Duty-cycle calculation
-- [x] Inductor calculation
-- [x] Capacitor calculation
-- [x] Python model
-- [x] KiCad schematic
-- [x] Initial SPICE simulation
-- [x] PWM analysis
-- [x] Wokwi PWM verification
-- [x] GitHub repository
-- [ ] Complete parameter-sweep graphs
-- [ ] Automated SPICE data extraction
-- [ ] Arduino hardware PWM
-- [ ] PCB layout
-- [ ] Gerber generation
-- [ ] Hardware prototype
-- [ ] Experimental waveform capture
-- [ ] Efficiency measurement
-- [ ] Thermal analysis
-- [ ] Theory vs SPICE comparison
-- [ ] SPICE vs hardware comparison
-- [ ] Closed-loop voltage regulation
-- [ ] Soft-start implementation
-- [ ] Protection circuitry
-- [ ] Optimization of switching components
-
----
-
-# 🏁 Engineering Workflow
-
-The final objective of this project is not simply to simulate a boost converter.
-
-The project follows a complete engineering methodology:
-
-```text
-                  ┌────────────────────┐
-                  │  REQUIREMENTS       │
-                  │  5 V → 7 V          │
-                  │  100 kHz            │
-                  └─────────┬──────────┘
-                            ↓
-                  ┌────────────────────┐
-                  │ THEORY             │
-                  │ Boost equations    │
-                  └─────────┬──────────┘
-                            ↓
-                  ┌────────────────────┐
-                  │ DESIGN CALCULATIONS│
-                  │ D, L, C, I, P      │
-                  └─────────┬──────────┘
-                            ↓
-                  ┌────────────────────┐
-                  │ PYTHON MODEL       │
-                  │ Analytical study   │
-                  └─────────┬──────────┘
-                            ↓
-                  ┌────────────────────┐
-                  │ KiCad / SPICE      │
-                  │ Circuit simulation │
-                  └─────────┬──────────┘
-                            ↓
-                  ┌────────────────────┐
-                  │ PARAMETRIC ANALYSIS│
-                  │ D, f, L, C, R      │
-                  └─────────┬──────────┘
-                            ↓
-                  ┌────────────────────┐
-                  │ PWM GENERATION     │
-                  │ Arduino UNO        │
-                  └─────────┬──────────┘
-                            ↓
-                  ┌────────────────────┐
-                  │ WOKWI VERIFICATION │
-                  └─────────┬──────────┘
-                            ↓
-                  ┌────────────────────┐
-                  │ PCB DESIGN         │
-                  └─────────┬──────────┘
-                            ↓
-                  ┌────────────────────┐
-                  │ HARDWARE           │
-                  └─────────┬──────────┘
-                            ↓
-                  ┌────────────────────┐
-                  │ MEASUREMENTS       │
-                  └─────────┬──────────┘
-                            ↓
-                  ┌────────────────────┐
-                  │ VALIDATION         │
-                  │ Theory vs SPICE    │
-                  │ vs Hardware        │
-                  └────────────────────┘
-```
+Future development can focus on closed-loop voltage regulation, dedicated gate driving, PCB implementation, efficiency optimization, automated SPICE dataset generation, and machine-learning-assisted converter optimization.
 
 ---
 
 # 👨‍💻 Author
 
-<div align="center">
+**Sai Nandan**
 
-## RAVINUTALA NAGA VENKATA SAI NANDAN
+Electronics and Communication Engineering
 
-**Electronics and Communication Engineering**
-
-Power Electronics • Embedded Systems • Circuit Simulation • Python • PCB Design
-
-</div>
+This repository documents the development process, calculations, simulations, software models, and future hardware validation of the boost-converter project.
 
 ---
 
-# ⚡ Final Project Statement
+# ⭐ Acknowledgment
 
-This project demonstrates the design and analysis of a high-frequency boost converter through mathematical modelling, Python-based analysis, KiCad schematic development, SPICE simulation, PWM generation, parametric analysis, and planned hardware validation.
+This project is developed as an academic engineering project for studying:
 
-The design is based on a **5 V DC input**, **7 V target output**, **100 kHz switching frequency**, and approximately **35–36% practical PWM duty cycle**.
+- Power electronics
+- DC-DC converters
+- PWM control
+- SPICE simulation
+- Embedded systems
+- Numerical analysis
+- Parameter optimization
 
-The project separates:
+---
 
-```text
-THEORY
-   ↓
-ANALYTICAL MODEL
-   ↓
-SPICE SIMULATION
-   ↓
-HARDWARE
-   ↓
-EXPERIMENTAL VALIDATION
-```
+# 📜 License
 
-so that calculated, simulated, and measured results are not incorrectly represented as one another.
+This project is intended for educational and research purposes.
 
-<div align="center">
-
-### ⚡ 5 V → 7 V Boost Converter
-
-**From Mathematical Design → Simulation → PWM → Hardware Validation**
-
-</div>
+You may study, modify, and extend the implementation with appropriate attribution.
