@@ -1778,10 +1778,8 @@ The project follows a complete engineering methodology:
 ---
 👨‍💻 Author
 
-Sai Nandan
+RAVINUTALA NAGA VENKATA SAI NANDAN
 Electronics and Communication Engineering
-Power Electronics • Embedded Systems • Circuit Simulation • Python • PCB Design
-
 ---
 ⚡ Final Project Statement
 This project demonstrates the design and analysis of a high-frequency boost converter through mathematical modelling, Python-based analysis, KiCad schematic development, SPICE simulation, PWM generation, parametric analysis, and planned hardware validation.
